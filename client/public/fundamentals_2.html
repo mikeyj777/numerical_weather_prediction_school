@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentals of NWP - NWP Explorer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <header class="bg-blue-600 text-white p-4">
+        <h1 class="text-3xl font-bold">Numerical Weather Prediction (NWP) Explorer</h1>
+        <nav class="mt-4">
+            <ul class="flex space-x-4">
+                <li><a href="index.html" class="hover:underline">Home</a></li>
+                <li><a href="fundamentals.html" class="hover:underline">Fundamentals</a></li>
+                <li><a href="models.html" class="hover:underline">NWP Models</a></li>
+                <li><a href="verification.html" class="hover:underline">Forecast Verification</a></li>
+                <li><a href="applications.html" class="hover:underline">Applications</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4">
+        <section id="fundamentals" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Fundamentals of NWP</h2>
+            <p class="mb-4">Explore the core principles and techniques that form the foundation of Numerical Weather Prediction. Understanding these fundamentals is crucial for grasping how modern weather forecasts are generated.</p>
+            
+            <div id="atmospheric-dynamics" class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4">Atmospheric Dynamics</h3>
+                <p class="mb-4">Atmospheric dynamics is the study of motion systems of meteorological importance. These motion systems include diverse phenomena such as thunderstorms, tornadoes, gravity waves, tropical cyclones, extratropical cyclones, jet streams, and global-scale circulations.</p>
+                
+                <!-- More content here... -->
+
+                <!-- Placeholder for React component -->
+                <div id="atmospheric-dynamics-visual" class="mt-8"></div>
+            </div>
+
+            <!-- Other sections (Numerical Methods, Data Assimilation) would follow... -->
+
+        </section>
+    </main>
+
+    <footer class="bg-gray-200 p-4 mt-8">
+        <p>&copy; 2024 NWP Explorer. All rights reserved.</p>
+    </footer>
+
+    <!-- React and app scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="/dist/bundle.js"></script>
+</body>
+</html>
