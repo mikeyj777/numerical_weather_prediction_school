@@ -6,6 +6,8 @@ import Fundamentals from './pages/Fundamentals';
 import Models from './pages/Models';
 import Verification from './pages/Verification';
 import Applications from './pages/Applications';
+import CommonMethods from './pages/models/CommonMethods';
+import ModelDivergences from './pages/models/ModelDivergences';
 
 const App = () => {
   return (
@@ -15,8 +17,11 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/fundamentals" element={<Fundamentals />} />
           <Route path="/models" element={<Models />} />
+          <Route path="/models/background/common-methods" element={<CommonMethods />} />
+          <Route path="/models/background/divergences" element={<ModelDivergences />} />
           <Route path="/verification" element={<Verification />} />
           <Route path="/applications" element={<Applications />} />
+          {/* Add more routes for other model pages as they are created */}
         </Routes>
       </Layout>
     </Router>
