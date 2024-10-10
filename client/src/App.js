@@ -14,6 +14,7 @@ import MomentumEquations from './pages/models/equations/MomentumEquations';
 import ThermodynamicEquation from './pages/models/equations/ThermodynamicEquation';
 import ContinuityEquation from './pages/models/equations/ContinuityEquation';
 import HydrostaticEquation from './pages/models/equations/HydrostaticEquation';
+import NWPSimulation from './pages/models/equations/NWPSimulation';
 // Import other equation pages when they're created
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/models/equations/thermodynamic" element={<ThermodynamicEquation />} />
           <Route path="/models/equations/continuity" element={<ContinuityEquation />} />
           <Route path="/models/equations/hydrostatic" element={<HydrostaticEquation />} />
+          <Route path="/models/nwp-simulation" element={<NWPSimulation />} />
           {/* Add routes for other equation pages when they're created */}
           <Route path="/verification" element={<Verification />} />
           <Route path="/applications" element={<Applications />} />

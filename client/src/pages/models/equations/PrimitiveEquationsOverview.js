@@ -20,6 +20,7 @@ const PrimitiveEquationsOverview = () => {
         <li><Link to="/models/equations/thermodynamic" className="text-blue-600 hover:underline">Thermodynamic Equation</Link></li>
         <li><Link to="/models/equations/continuity" className="text-blue-600 hover:underline">Continuity Equation</Link></li>
         <li><Link to="/models/equations/hydrostatic" className="text-blue-600 hover:underline">Hydrostatic Equation</Link></li>
+        <li><Link to="/models/nwp-simulation" className="text-blue-600 hover:underline">Primitive Equation Simulation</Link></li>
       </ul>
       <p className="mb-4">
         These equations are derived from fundamental physical principles and are simplified 
