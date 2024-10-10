@@ -12,20 +12,20 @@ const CommonMethods = () => {
       </p>
 
       <section className="mb-8">
-        <h3 className="text-xl font-semibold mb-4">1. Primitive Equations</h3>
+        <h3 className="text-xl font-semibold mb-4">Primitive Equations</h3>
         <p className="mb-4">
-          Most NWP models are based on the primitive equations, which are a set of nonlinear differential 
-          equations used to approximate global atmospheric flows. These typically include:
+          The primitive equations form the foundation of most NWP models. They are a set of nonlinear 
+          differential equations that describe atmospheric motions and thermodynamics:
         </p>
         <ul className="list-disc pl-6 mb-4">
-          <li>Momentum equations (horizontal)</li>
-          <li>Thermodynamic equation</li>
-          <li>Continuity equation</li>
-          <li>Hydrostatic equation</li>
+          <li><Link to="/models/equations/momentum" className="text-blue-600 hover:underline">Momentum Equations</Link></li>
+          <li><Link to="/models/equations/thermodynamic" className="text-blue-600 hover:underline">Thermodynamic Equation</Link></li>
+          <li><Link to="/models/equations/continuity" className="text-blue-600 hover:underline">Continuity Equation</Link></li>
+          <li><Link to="/models/equations/hydrostatic" className="text-blue-600 hover:underline">Hydrostatic Equation</Link></li>
         </ul>
-        <Link to="/models/background/equations" className="text-blue-600 hover:underline">Learn more about fundamental equations</Link>
+        <Link to="/models/equations/overview" className="text-blue-600 hover:underline">Learn more about the Primitive Equations</Link>
       </section>
-
+      
       <section className="mb-8">
         <h3 className="text-xl font-semibold mb-4">2. Grid-based Discretization</h3>
         <p className="mb-4">
