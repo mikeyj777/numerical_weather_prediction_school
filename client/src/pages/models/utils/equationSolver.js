@@ -5,7 +5,6 @@
  * @param {Array} temperature - 2D array representing the temperature field
  * @param {Array} windU - 2D array representing the zonal wind component
  * @param {Array} windV - 2D array representing the meridional wind component
- * @param {Object} gridParams - Grid parameters (nx, ny, dx, dy)
  * @param {number} timeStep - Time step for the numerical integration
  * @returns {Array} - Updated state [pressure, temperature, windU, windV]
  *
@@ -36,7 +35,17 @@
  * Additional boundary conditions, physical parameterizations, and optimizations
  * can be incorporated based on specific requirements and model complexity.
  */
-export const equationSolver = (pressure, temperature, windU, windV, gridParams, timeStep) => {
+
+const gridParams = {
+    nx: 100,
+    ny: 100,
+    dx: 10000,
+    dy: 10000,
+  };
+
+
+export const equationSolver = (pressure, temperature, windU, windV, timeStep) => {
+  
   const { nx, ny, dx, dy } = gridParams;
 
   const R = 287.05; // Gas constant for dry air (J/kg/K)
@@ -49,12 +58,22 @@ export const equationSolver = (pressure, temperature, windU, windV, gridParams, 
 
     for (let i = 1; i < nx - 1; i++) {
       for (let j = 1; j < ny - 1; j++) {
-        const dPdx = (p[i + 1][j] - p[i - 1][j]) / (2 * dx);
-        const dPdy = (p[i][j + 1] - p[i][j - 1]) / (2 * dy);
-        const dUdx = (u[i + 1][j] - u[i - 1][j]) / (2 * dx);
-        const dVdy = (v[i][j + 1] - v[i][j - 1]) / (2 * dy);
+        try {
+          const dPdx = (p[i + 1][j] - p[i - 1][j]) / (2 * dx);
+          const dPdy = (p[i][j + 1] - p[i][j - 1]) / (2 * dy);
+          const dUdx = (u[i + 1][j] - u[i - 1][j]) / (2 * dx);
+          const dVdy = (v[i][j + 1] - v[i][j - 1]) / (2 * dy);
 
-        dPdt[i][j] = -(dUdx + dVdy);
+          dPdt[i][j] = -(dUdx + dVdy);
+        } catch (error) {
+          console.log("Error: ", error);
+          console.log("i: ", i, "j: ", j, "dPdx = ", (p[i + 1][j] - p[i - 1][j]) / (2 * dx));
+          console.log("i: ", i, "j: ", j, "dPdy = ", (p[i][j + 1] - p[i][j - 1]) / (2 * dy));
+          console.log("i: ", i, "j: ", j, "dUdx = ", (u[i + 1][j] - u[i - 1][j]) / (2 * dx));
+          console.log("i: ", i, "j: ", j, "dVdy = ", (v[i][j + 1] - v[i][j - 1]) / (2 * dy));
+        
+        }
+
       }
     }
 
@@ -189,6 +208,6 @@ export const equationSolver = (pressure, temperature, windU, windV, gridParams, 
     newWindV[0][j] = newWindV[nx - 2][j];
     newWindV[nx - 1][j] = newWindV[1][j];
   }
-
+  
   return [newPressure, newTemperature, newWindU, newWindV];
 };

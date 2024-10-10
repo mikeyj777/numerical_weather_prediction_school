@@ -1,6 +1,4 @@
-// pages/models/equations/NWPSimulation.js
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, ImageOverlay } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import 'leaflet/dist/leaflet.css';
@@ -9,7 +7,6 @@ import { equationSolver } from '../utils/equationSolver';
 import { generatePressureOverlay, generateTemperatureOverlay } from '../utils/parameterRendering';
 import { Card, CardHeader, CardContent, CardActions, Button } from '../../../components/ui/Card';
 import { Slider } from '../../../components/ui/Slider';
-import '../../../App.css';
 
 const NWPSimulation = () => {
   // State variables
@@ -17,101 +14,110 @@ const NWPSimulation = () => {
   const [temperature, setTemperature] = useState(null);
   const [windU, setWindU] = useState(null);
   const [windV, setWindV] = useState(null);
-  const [gridParams, setGridParams] = useState(null);
   const [timeStep, setTimeStep] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
   const [pressureData, setPressureData] = useState([]);
   const [temperatureData, setTemperatureData] = useState([]);
 
+  // Ref to store the current value of isRunning
+  const isRunningRef = useRef(isRunning);
+
+  // Update ref when isRunning changes
+  useEffect(() => {
+    isRunningRef.current = isRunning;
+  }, [isRunning]);
+
   // Function to initialize the simulation with default initial conditions
-  const initializeSimulation = () => {
+  const initializeSimulation = useCallback(() => {
     console.log("1. Initialization");
     console.log("1.A. Loading initial conditions");
-    const { pressure, temperature, windU, windV, gridParams } = initialConditions;
+    const { pressure, temperature, windU, windV } = initialConditions;
+
     console.log("1.A.i. Pressure:", pressure);
     console.log("1.A.ii. Temperature:", temperature);
     console.log("1.A.iii. Wind U:", windU);
     console.log("1.A.iv. Wind V:", windV);
-    console.log("1.A.v. Grid Parameters:", gridParams);
-
+  
     console.log("1.B. Setting initial state");
     setPressure(pressure);
     setTemperature(temperature);
     setWindU(windU);
     setWindV(windV);
-    setGridParams(gridParams);
     setPressureData([]);
     setTemperatureData([]);
-  };
-
-  // Use effect hook to initialize the simulation and start the simulation loop
-  useEffect(() => {
-    console.log("2. Component Mount");
-    console.log("2.A. Initializing simulation");
-    initializeSimulation();
-    console.log("2.B. Starting simulation loop");
-    simulationLoop();
   }, []);
 
+  // Initialize simulation only once when component mounts
+  useEffect(() => {
+    initializeSimulation();
+  }, [initializeSimulation]);
+
   // Simulation loop function
-  const simulationLoop = () => {
-    // console.log("3. Simulation Loop");
-    // console.log("is running:", isRunning);
-    if (isRunning) {
+  const simulationLoop = useCallback(() => {
+    if (isRunningRef.current) {
       console.log("3.A. Solving equations");
       const [newPressure, newTemperature, newWindU, newWindV] = equationSolver(
         pressure,
         temperature,
         windU,
         windV,
-        gridParams,
         timeStep
       );
-      console.log("3.A.i. New Pressure:", newPressure);
-      console.log("3.A.ii. New Temperature:", newTemperature);
-      console.log("3.A.iii. New Wind U:", newWindU);
-      console.log("3.A.iv. New Wind V:", newWindV);
 
-      console.log("3.B. Updating state variables");
+      // console.log("3.B. Updating state variables");
       setPressure(newPressure);
       setTemperature(newTemperature);
       setWindU(newWindU);
       setWindV(newWindV);
 
-      console.log("3.C. Storing historical data");
+      // console.log("3.B.i. new pressure:", newPressure, "new temperature:", newTemperature, "new windU:", newWindU, "new windV:", newWindV);
+
+      // console.log("3.C. Storing historical data");
       setPressureData((prevData) => [...prevData, { time: prevData.length, pressure: newPressure[50][50] }]);
       setTemperatureData((prevData) => [...prevData, { time: prevData.length, temperature: newTemperature[50][50] }]);
-      console.log("3.C.i. Pressure Data:", pressureData);
-      console.log("3.C.ii. Temperature Data:", temperatureData);
     }
 
-    // console.log("3.D. Requesting next animation frame");
     requestAnimationFrame(simulationLoop);
-  };
+  }, [pressure, temperature, windU, windV, timeStep]);
 
-  // Event handlers
+  // Use effect hook to initialize the simulation and start the simulation loop
+  // Start or stop simulation loop based on isRunning
+  useEffect(() => {
+    let animationFrameId;
+    if (isRunning) {
+      console.log("Starting simulation loop");
+      animationFrameId = requestAnimationFrame(simulationLoop);
+    }
+    return () => {
+      if (animationFrameId) {
+        console.log("Cleaning up simulation loop");
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [isRunning, simulationLoop]);
+
+  // Event handler for starting the simulation
   const handleStartSimulation = () => {
-    console.log("4. Start Simulation");
+    console.log("Starting simulation");
     setIsRunning(true);
-    console.log("4.run-check Start Simulation, is running:", isRunning);
   };
 
+  // Event handler for stopping the simulation
   const handleStopSimulation = () => {
-    console.log("5. Stop Simulation");
+    console.log("Stopping simulation");
     setIsRunning(false);
-    console.log("5.run-check Stop Simulation, is running:", isRunning);
   };
 
+  // Event handler for resetting the simulation
   const handleResetSimulation = () => {
-    console.log("6. Reset Simulation");
+    console.log("Resetting simulation");
+    setIsRunning(false);
     initializeSimulation();
   };
 
+  // Event handler for changing the time step
   const handleTimeStepChange = (event) => {
-    console.log("7. Time Step Change");
-    const newTimeStep = Number(event.target.value);
-    console.log("7.A. New Time Step:", newTimeStep);
-    setTimeStep(newTimeStep);
+    setTimeStep(Number(event.target.value));
   };
 
   return (

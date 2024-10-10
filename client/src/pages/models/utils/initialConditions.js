@@ -5,12 +5,6 @@ export const initialConditions = {
   temperature: generateTemperatureField(),
   windU: generateWindUField(),
   windV: generateWindVField(),
-  gridParams: {
-    nx: 100,
-    ny: 100,
-    dx: 10000,
-    dy: 10000,
-  },
 };
 
 function generatePressureField() {
