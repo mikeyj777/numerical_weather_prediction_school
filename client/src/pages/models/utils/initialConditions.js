@@ -17,9 +17,11 @@ function generatePressureField() {
   
   for (let i = 0; i < nx; i++) {
     for (let j = 0; j < ny; j++) {
-      pressure[i][j] = 101325 + Math.sin(i / 10) * Math.cos(j / 20) * 1000;
+      pressure[i][j] = 101325 + Math.sin(i / 10) * Math.cos(j / 20) * 1000;  // * Math.random();
     }
   }
+
+  console.log("initial pressure 24 24:  ", pressure[24][24]);
   
   return pressure;
 }
@@ -34,7 +36,7 @@ function generateTemperatureField() {
   
   for (let i = 0; i < nx; i++) {
     for (let j = 0; j < ny; j++) {
-      temperature[i][j] = 288 - i / 100 * 10;
+      temperature[i][j] = 288 - i / 100 * 10 * Math.random();
     }
   }
   
@@ -51,7 +53,7 @@ function generateWindUField() {
   
   for (let i = 0; i < nx; i++) {
     for (let j = 0; j < ny; j++) {
-      windU[i][j] = Math.sin(j / 20) * 5;
+      windU[i][j] = Math.sin(j / 20) * 5 * Math.random();
     }
   }
   
@@ -68,7 +70,7 @@ function generateWindVField() {
   
   for (let i = 0; i < nx; i++) {
     for (let j = 0; j < ny; j++) {
-      windV[i][j] = Math.cos(i / 20) * 5;
+      windV[i][j] = Math.cos(i / 20) * 5 * Math.random();
     }
   }
   

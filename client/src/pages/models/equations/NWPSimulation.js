@@ -1,3 +1,5 @@
+// pages/models/equations/NWPSimulation.js
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, ImageOverlay } from 'react-leaflet';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
@@ -14,6 +16,7 @@ const NWPSimulation = () => {
   const [temperature, setTemperature] = useState(null);
   const [windU, setWindU] = useState(null);
   const [windV, setWindV] = useState(null);
+  const [gridParams, setGridParams] = useState(null);
   const [timeStep, setTimeStep] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
   const [pressureData, setPressureData] = useState([]);
@@ -22,6 +25,8 @@ const NWPSimulation = () => {
   // Ref to store the current value of isRunning
   const isRunningRef = useRef(isRunning);
 
+  const wasRunning = useRef(false);
+
   // Update ref when isRunning changes
   useEffect(() => {
     isRunningRef.current = isRunning;
@@ -29,22 +34,20 @@ const NWPSimulation = () => {
 
   // Function to initialize the simulation with default initial conditions
   const initializeSimulation = useCallback(() => {
-    console.log("1. Initialization");
-    console.log("1.A. Loading initial conditions");
+    // console.log("Initializing simulation");
     const { pressure, temperature, windU, windV } = initialConditions;
-
-    console.log("1.A.i. Pressure:", pressure);
-    console.log("1.A.ii. Temperature:", temperature);
-    console.log("1.A.iii. Wind U:", windU);
-    console.log("1.A.iv. Wind V:", windV);
-  
-    console.log("1.B. Setting initial state");
     setPressure(pressure);
     setTemperature(temperature);
     setWindU(windU);
     setWindV(windV);
     setPressureData([]);
     setTemperatureData([]);
+
+    // console.log("Pressure: ", pressure);
+    // console.log("Temperature: ", temperature);
+    // console.log("WindU: ", windU);
+    // console.log("WindV: ", windV);
+    
   }, []);
 
   // Initialize simulation only once when component mounts
@@ -54,45 +57,49 @@ const NWPSimulation = () => {
 
   // Simulation loop function
   const simulationLoop = useCallback(() => {
-    if (isRunningRef.current) {
-      console.log("3.A. Solving equations");
-      const [newPressure, newTemperature, newWindU, newWindV] = equationSolver(
-        pressure,
-        temperature,
-        windU,
-        windV,
-        timeStep
-      );
-
-      // console.log("3.B. Updating state variables");
-      setPressure(newPressure);
-      setTemperature(newTemperature);
-      setWindU(newWindU);
-      setWindV(newWindV);
-
-      // console.log("3.B.i. new pressure:", newPressure, "new temperature:", newTemperature, "new windU:", newWindU, "new windV:", newWindV);
-
-      // console.log("3.C. Storing historical data");
-      setPressureData((prevData) => [...prevData, { time: prevData.length, pressure: newPressure[50][50] }]);
-      setTemperatureData((prevData) => [...prevData, { time: prevData.length, temperature: newTemperature[50][50] }]);
+    if (!isRunningRef.current) {
+      return;
     }
+    // console.log("Running simulation step");
+    const [newPressure, newTemperature, newWindU, newWindV] = equationSolver(
+      pressure,
+      temperature,
+      windU,
+      windV,
+      gridParams,
+      timeStep
+    );
 
-    requestAnimationFrame(simulationLoop);
-  }, [pressure, temperature, windU, windV, timeStep]);
+    setPressure(newPressure);
+    setTemperature(newTemperature);
+    setWindU(newWindU);
+    setWindV(newWindV);
+    // console.log("new Pressure: ", newPressure[50][50]);
+    // console.log("new Temperature: ", newTemperature[50][50]);
+    setPressureData((prevData) => [...prevData, { time: prevData.length, pressure: newPressure[24][24] }]);
+    setTemperatureData((prevData) => [...prevData, { time: prevData.length, temperature: newTemperature[50][50] }]);
+  }, [pressure, temperature, windU, windV, gridParams, timeStep]);
 
-  // Use effect hook to initialize the simulation and start the simulation loop
-  // Start or stop simulation loop based on isRunning
+  // Use effect hook to control the simulation loop
   useEffect(() => {
     let animationFrameId;
-    if (isRunning) {
-      console.log("Starting simulation loop");
-      animationFrameId = requestAnimationFrame(simulationLoop);
+
+    const runSimulationLoop = () => {
+      simulationLoop();
+      animationFrameId = requestAnimationFrame(runSimulationLoop);
+    };
+
+    if (isRunningRef.current) {
+      // console.log("Starting simulation loop");
+      runSimulationLoop();
     }
+
     return () => {
-      if (animationFrameId) {
+      if (wasRunning.current && !isRunningRef.current) {
         console.log("Cleaning up simulation loop");
         cancelAnimationFrame(animationFrameId);
       }
+      wasRunning.current = isRunningRef.current;
     };
   }, [isRunning, simulationLoop]);
 
