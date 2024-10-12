@@ -9,6 +9,7 @@ import { equationSolver } from '../utils/equationSolver';
 import { generatePressureOverlay, generateTemperatureOverlay } from '../utils/parameterRendering';
 import { Card, CardHeader, CardContent, CardActions, Button } from '../../../components/ui/Card';
 import { Slider } from '../../../components/ui/Slider';
+import { ContourMap } from '../../../components/ContourMap';
 
 const NWPSimulation = () => {
   // State variables
@@ -16,11 +17,11 @@ const NWPSimulation = () => {
   const [temperature, setTemperature] = useState(null);
   const [windU, setWindU] = useState(null);
   const [windV, setWindV] = useState(null);
-  const [gridParams, setGridParams] = useState(null);
   const [timeStep, setTimeStep] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
   const [pressureData, setPressureData] = useState([]);
   const [temperatureData, setTemperatureData] = useState([]);
+  const [selectedMap, setSelectedMap] = useState(null);
 
   // Ref to store the current value of isRunning
   const isRunningRef = useRef(isRunning);
@@ -66,7 +67,6 @@ const NWPSimulation = () => {
       temperature,
       windU,
       windV,
-      gridParams,
       timeStep
     );
 
@@ -78,7 +78,7 @@ const NWPSimulation = () => {
     // console.log("new Temperature: ", newTemperature[50][50]);
     setPressureData((prevData) => [...prevData, { time: prevData.length, pressure: newPressure[24][24] }]);
     setTemperatureData((prevData) => [...prevData, { time: prevData.length, temperature: newTemperature[50][50] }]);
-  }, [pressure, temperature, windU, windV, gridParams, timeStep]);
+  }, [pressure, temperature, windU, windV, timeStep]);
 
   // Use effect hook to control the simulation loop
   useEffect(() => {
@@ -92,6 +92,7 @@ const NWPSimulation = () => {
     if (isRunningRef.current) {
       // console.log("Starting simulation loop");
       runSimulationLoop();
+
     }
 
     return () => {
@@ -102,6 +103,10 @@ const NWPSimulation = () => {
       wasRunning.current = isRunningRef.current;
     };
   }, [isRunning, simulationLoop]);
+
+  const handleMapSelection = (mapType) => {
+    setSelectedMap(mapType);
+  };
 
   // Event handler for starting the simulation
   const handleStartSimulation = () => {
@@ -141,18 +146,19 @@ const NWPSimulation = () => {
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {pressure && temperature && (
               <>
-                {/* Pressure overlay */}
-                <ImageOverlay
+                {selectedMap === 'pressure' && <ContourMap data={pressure} type="pressure" />}
+                {selectedMap === 'temperature' && <ContourMap data={temperature} type="temperature" />}
+                {/* <ImageOverlay
                   url={generatePressureOverlay(pressure)}
                   bounds={[[-90, -180], [90, 180]]}
                   opacity={0.7}
                 />
-                {/* Temperature overlay */}
+                
                 <ImageOverlay
                   url={generateTemperatureOverlay(temperature)}
                   bounds={[[-90, -180], [90, 180]]}
                   opacity={0.7}
-                />
+                /> */}
               </>
             )}
           </MapContainer>
@@ -165,6 +171,11 @@ const NWPSimulation = () => {
             <Button onClick={handleStartSimulation}>Start</Button>
           )}
           <Button onClick={handleResetSimulation}>Reset</Button>
+        </CardActions>
+        <CardActions>
+          <Button onClick={() => handleMapSelection('pressure')}>Pressure Map</Button>
+          <Button onClick={() => handleMapSelection('temperature')}>Temperature Map</Button>
+          <Button onClick={() => handleMapSelection('windSpeed')}>Wind Field</Button>
         </CardActions>
       </Card>
 

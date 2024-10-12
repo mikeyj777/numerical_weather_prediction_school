@@ -17,12 +17,10 @@ function generatePressureField() {
   
   for (let i = 0; i < nx; i++) {
     for (let j = 0; j < ny; j++) {
-      pressure[i][j] = 101325 + Math.sin(i / 10) * Math.cos(j / 20) * 1000;  // * Math.random();
+      pressure[i][j] = 101325 + Math.sin(i / 10) * Math.cos(j / 20) * 1000 * Math.random();
     }
   }
 
-  console.log("initial pressure 24 24:  ", pressure[24][24]);
-  
   return pressure;
 }
 
